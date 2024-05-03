@@ -4,15 +4,13 @@ Workshop to learn reproducible research with Git, Github and R Studio
 Nate Breznau, University of Bremen<br>
 [Professional Website](https://sites.google.com/site/nbreznau/)<br>
 <a href="mailto:breznau.nate@gmail.com">breznau.nate@gmail.com</a>.<br>
-[![](./Media/orcid.png){width=20 height=20}](https://orcid.org/0000-0003-4983-3137)
-
+<img src="./Media/orcid.png" alt="orcid" width="50"/>
 
 [Syllabus (most recent)](https://docs.google.com/document/d/1O_v-VTRHChedoDvVtzn8xNG0jBqJxMW0Q7-0bJ90Q48/edit?usp=sharing)
 
 ## Usage License
 
-![](./Media/CCBY.png){width=72 height=27}
-
+<img src="./Media/CCBY.png" alt="orcid" width="100"/>
 You may freely use these materials for non-commercial purposes. Github does not have a default CC-BY-NC license, but I have added one that I took from [this repo](https://github.com/santisoler/cc-licenses/blob/main/LICENSE-CC-BY-NC).
 
 That means, please give credit if you use the materials.
