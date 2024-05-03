@@ -1,0 +1,30 @@
+---
+title: "01 Data Analysis"
+output: html_notebook
+---
+I can write anything here
+
+
+## Setup
+
+Data imported and cleaned with R script [data_import.R](./Data/data_import.R)
+
+```{r setup}
+pacman::p_load('tidyverse')
+
+df <- readRDS("C:/Github/reproducible_R_Git/Data/df.RDS")
+```
+
+## Linear Regression
+
+```{r ols}
+model1 <- lm(life_exp ~ gdppc_k + region, data = df)
+summary(model1)
+```
+
+
+```{r ols1}
+model2 <- lm(life_exp ~ gdppc_k + has_god + has_unity, data = df)
+summary(model2)
+```
+

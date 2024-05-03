@@ -1,9 +1,7 @@
-# package pacman allows checking if a package is already installed plus loads it
-install.packages('pacman')
-library('pacman')
+
 
 ## Check/load packages
-p_load('tidyverse',
+pacman::p_load('tidyverse',
        'tm',
        'countrycode')
 
@@ -67,8 +65,9 @@ df <- select(df_mottos, -c(motto, motto_trimmed)) %>%
   left_join(select(df_gdp, c(NY.GDP.PCAP.KD, iso3c)), by = "iso3c") %>%
   left_join(select(df_lex, c(SP.DYN.LE00.IN, iso3c)), by = "iso3c") %>%
   mutate(gdppc_k = NY.GDP.PCAP.KD/1000,
-         life_exp = SP.DYN.LE00.IN) %>%
+         life_exp = SP.DYN.LE00.IN,
+         region = countrycode(iso3c, "iso3c", "region23")) %>%
   select(-c(NY.GDP.PCAP.KD,SP.DYN.LE00.IN))
 
-  
+saveRDS(df, "./Data/df.RDS")
 
