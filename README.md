@@ -19,6 +19,11 @@ That means, please give credit if you use the materials.
 
 Breznau, Nate. 2024. *"Reproducible Research with R Studio and Git"* Github Repository. https://github.com/nbreznau/reproducible_R_Git/
 
+## Country Motto Data
+
+Scraped from Wikipedia 03.05.2024 around 10am CET
+
+[country_mottos.csv](./Data/country_mottos.csv)
 ## Preparatory Installations
 
 Students should install R Studio and Git. Ideally they will already have their Github (or equivalent repo hosting service) credentials verified. 
