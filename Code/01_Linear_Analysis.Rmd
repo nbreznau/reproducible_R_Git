@@ -2,7 +2,8 @@
 title: "01 Data Analysis"
 output: html_notebook
 ---
-I can write anything here
+
+The following exercises are part of a course/workshop to learn basic R with R Studio and Git ([Syllabus](https://docs.google.com/document/d/1O_v-VTRHChedoDvVtzn8xNG0jBqJxMW0Q7-0bJ90Q48/edit))
 
 
 ## Setup
@@ -10,21 +11,38 @@ I can write anything here
 Data imported and cleaned with R script [data_import.R](./Data/data_import.R)
 
 ```{r setup}
-pacman::p_load('tidyverse')
+
+# by making an object with a list of packages, we can later call the citations of these packages (see section 'References' below)
+
+packages <- c('tidyverse', 
+              'pacman')
+
+
+# here we can load the packages. p_load from the package pacman checks if the package is already downloaded and if so loads it, if not downloads
+
+pacman::p_load(packages, character.only = T)
+
+
+# here we load the data
 
 df <- readRDS("C:/Github/reproducible_R_Git/Data/df.RDS")
 ```
 
-## Linear Regression
+## Linear Regressions
+
+### Store models
+
+We run regressions of life expectancy on GDP, region and variables that categorize the mottos of different countries. We store these regressions in objects named model1, model2, etc.
 
 ```{r ols}
 model1 <- lm(life_exp ~ gdppc_k + region, data = df)
-summary(model1)
+model2 <- lm(life_exp ~ gdppc_k + has_god + has_unity, data = df)
 ```
 
+### Tabulate
 
 ```{r ols1}
-model2 <- lm(life_exp ~ gdppc_k + has_god + has_unity, data = df)
+
 summary(model2)
 ```
 

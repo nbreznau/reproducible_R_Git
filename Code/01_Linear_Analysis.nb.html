@@ -1752,97 +1752,51 @@ display: none;
 
 
 <!-- rnb-text-begin -->
-<p>I can write anything here</p>
+<p>The following exercises are part of a course/workshop to learn basic
+R with R Studio and Git (<a href="https://docs.google.com/document/d/1O_v-VTRHChedoDvVtzn8xNG0jBqJxMW0Q7-0bJ90Q48/edit">Syllabus</a>)</p>
 <div id="setup" class="section level2">
 <h2>Setup</h2>
 <p>Data imported and cleaned with R script <a href="./Data/data_import.R">data_import.R</a></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucGFjbWFuOjpwX2xvYWQoJ3RpZHl2ZXJzZScpXG5cbmRmIDwtIHJlYWRSRFMoXCJDOi9HaXRodWIvcmVwcm9kdWNpYmxlX1JfR2l0L0RhdGEvZGYuUkRTXCIpXG5gYGAifQ== -->
-<pre class="r"><code>pacman::p_load(&#39;tidyverse&#39;)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG4jIGJ5IG1ha2luZyBhbiBvYmplY3Qgd2l0aCBhIGxpc3Qgb2YgcGFja2FnZXMsIHdlIGNhbiBsYXRlciBjYWxsIHRoZSBjaXRhdGlvbnMgb2YgdGhlc2UgcGFja2FnZXMgKHNlZSBzZWN0aW9uICdSZWZlcmVuY2VzJyBiZWxvdylcblxucGFja2FnZXMgPC0gYygndGlkeXZlcnNlJywgXG4gICAgICAgICAgICAgICdwYWNtYW4nKVxuXG5cbiMgaGVyZSB3ZSBjYW4gbG9hZCB0aGUgcGFja2FnZXMuIHBfbG9hZCBmcm9tIHRoZSBwYWNrYWdlIHBhY21hbiBjaGVja3MgaWYgdGhlIHBhY2thZ2UgaXMgYWxyZWFkeSBkb3dubG9hZGVkIGFuZCBpZiBzbyBsb2FkcyBpdCwgaWYgbm90IGRvd25sb2Fkc1xuXG5wYWNtYW46OnBfbG9hZChwYWNrYWdlcywgY2hhcmFjdGVyLm9ubHkgPSBUKVxuXG5cbiMgaGVyZSB3ZSBsb2FkIHRoZSBkYXRhXG5cbmRmIDwtIHJlYWRSRFMoXCJDOi9HaXRodWIvcmVwcm9kdWNpYmxlX1JfR2l0L0RhdGEvZGYuUkRTXCIpXG5gYGAifQ== -->
+<pre class="r"><code>
+# by making an object with a list of packages, we can later call the citations of these packages (see section &#39;References&#39; below)
+
+packages &lt;- c(&#39;tidyverse&#39;, 
+              &#39;pacman&#39;)
+
+
+# here we can load the packages. p_load from the package pacman checks if the package is already downloaded and if so loads it, if not downloads
+
+pacman::p_load(packages, character.only = T)
+
+
+# here we load the data
 
 df &lt;- readRDS(&quot;C:/Github/reproducible_R_Git/Data/df.RDS&quot;)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
-<div id="linear-regression" class="section level2">
-<h2>Linear Regression</h2>
+<div id="linear-regressions" class="section level2">
+<h2>Linear Regressions</h2>
+<div id="store-models" class="section level3">
+<h3>Store models</h3>
+<p>We run regressions of life expectancy on GDP, region and variables
+that categorize the mottos of different countries. We store these
+regressions in objects named model1, model2, etc.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubW9kZWwxIDwtIGxtKGxpZmVfZXhwIH4gZ2RwcGNfayArIHJlZ2lvbiwgZGF0YSA9IGRmKVxuc3VtbWFyeShtb2RlbDEpXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubW9kZWwxIDwtIGxtKGxpZmVfZXhwIH4gZ2RwcGNfayArIHJlZ2lvbiwgZGF0YSA9IGRmKVxubW9kZWwyIDwtIGxtKGxpZmVfZXhwIH4gZ2RwcGNfayArIGhhc19nb2QgKyBoYXNfdW5pdHksIGRhdGEgPSBkZilcbmBgYCJ9 -->
 <pre class="r"><code>model1 &lt;- lm(life_exp ~ gdppc_k + region, data = df)
-summary(model1)</code></pre>
+model2 &lt;- lm(life_exp ~ gdppc_k + has_god + has_unity, data = df)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiXG5DYWxsOlxubG0oZm9ybXVsYSA9IGxpZmVfZXhwIH4gZ2RwcGNfayArIHJlZ2lvbiwgZGF0YSA9IGRmKVxuXG5SZXNpZHVhbHM6XG4gICAgTWluICAgICAgMVEgIE1lZGlhbiAgICAgIDNRICAgICBNYXggXG4tOS4wMjA3IC0xLjg1NTMgIDAuMTQ2OSAgMi4wODg2IDEyLjgwOTQgXG5cbkNvZWZmaWNpZW50czpcbiAgICAgICAgICAgICAgICAgICAgICAgICAgRXN0aW1hdGUgU3RkLiBFcnJvciB0IHZhbHVlXG4oSW50ZXJjZXB0KSAgICAgICAgICAgICAgIDczLjM3MTU2ICAgIDIuODc0NTEgIDI1LjUyNVxuZ2RwcGNfayAgICAgICAgICAgICAgICAgICAgMC4xOTE1NSAgICAwLjAyNTU4ICAgNy40ODlcbnJlZ2lvbkNhcmliYmVhbiAgICAgICAgICAgLTEuOTAxOTkgICAgMi45NDgwOCAgLTAuNjQ1XG5yZWdpb25DZW50cmFsIEFtZXJpY2EgICAgIC0xLjE4ODI1ICAgIDMuMDU1NzQgIC0wLjM4OVxucmVnaW9uQ2VudHJhbCBBc2lhICAgICAgICAtNC4yMzcwMiAgICAzLjI2NDUyICAtMS4yOThcbnJlZ2lvbkVhc3Rlcm4gQWZyaWNhICAgICAgLTkuMjQ1NDUgICAgMi45OTE1MiAgLTMuMDkxXG5yZWdpb25FYXN0ZXJuIEFzaWEgICAgICAgICAyLjMyNDkyICAgIDMuMjU0NjEgICAwLjcxNFxucmVnaW9uRWFzdGVybiBFdXJvcGUgICAgICAtMS4zODQ1MCAgICAyLjk5OTY3ICAtMC40NjJcbnJlZ2lvbk1lbGFuZXNpYSAgICAgICAgICAgLTUuMzg3NzYgICAgMy4zODA4MCAgLTEuNTk0XG5yZWdpb25NaWNyb25lc2lhICAgICAgICAgIC03LjM4MDY0ICAgIDMuMjcyMzkgIC0yLjI1NVxucmVnaW9uTWlkZGxlIEFmcmljYSAgICAgIC0xMi44MTg0OSAgICAzLjA5OTMxICAtNC4xMzZcbnJlZ2lvbk5vcnRoZXJuIEFmcmljYSAgICAgLTEuOTc0MzYgICAgMy4yMDM3MiAgLTAuNjE2XG5yZWdpb25Ob3J0aGVybiBBbWVyaWNhICAgIC0zLjcwNDM5ICAgIDMuNjYxMzIgIC0xLjAxMlxucmVnaW9uTm9ydGhlcm4gRXVyb3BlICAgICAtMS42OTgxMyAgICAyLjgzNzE5ICAtMC41OTlcbnJlZ2lvblBvbHluZXNpYSAgICAgICAgICAgLTQuODMxOTUgICAgMy41MzExNyAgLTEuMzY4XG5yZWdpb25Tb3V0aC1FYXN0ZXJuIEFzaWEgIC0yLjM0NDgyICAgIDIuOTc0MjEgIC0wLjc4OFxucmVnaW9uU291dGggQW1lcmljYSAgICAgICAtMi4xNTEyMSAgICAyLjk3MTc0ICAtMC43MjRcbnJlZ2lvblNvdXRoZXJuIEFmcmljYSAgICAtMTIuNTI3NzggICAgMy4yNzAyNCAgLTMuODMxXG5yZWdpb25Tb3V0aGVybiBBc2lhICAgICAgIC0zLjAzMzgzICAgIDMuMDUyMTIgIC0wLjk5NFxucmVnaW9uU291dGhlcm4gRXVyb3BlICAgICAgMi41MTY5NyAgICAyLjkyNjI2ICAgMC44NjBcbnJlZ2lvbldlc3Rlcm4gQWZyaWNhICAgICAtMTEuOTIzODYgICAgMy4wMDM3MCAgLTMuOTcwXG5yZWdpb25XZXN0ZXJuIEFzaWEgICAgICAgIC0xLjQ0NjYwICAgIDIuODQwNDggIC0wLjUwOVxucmVnaW9uV2VzdGVybiBFdXJvcGUgICAgICAtMi41NzYyNSAgICAyLjk0MjMwICAtMC44NzZcbiAgICAgICAgICAgICAgICAgICAgICAgICBQcig+fHR8KSAgICBcbihJbnRlcmNlcHQpICAgICAgICAgICAgICAgPCAyZS0xNiAqKipcbmdkcHBjX2sgICAgICAgICAgICAgICAgICAzLjYwZS0xMiAqKipcbnJlZ2lvbkNhcmliYmVhbiAgICAgICAgICAwLjUxOTY5MiAgICBcbnJlZ2lvbkNlbnRyYWwgQW1lcmljYSAgICAwLjY5Nzg2NiAgICBcbnJlZ2lvbkNlbnRyYWwgQXNpYSAgICAgICAwLjE5NjA4MCAgICBcbnJlZ2lvbkVhc3Rlcm4gQWZyaWNhICAgICAwLjAwMjMzNSAqKiBcbnJlZ2lvbkVhc3Rlcm4gQXNpYSAgICAgICAwLjQ3NTk5MiAgICBcbnJlZ2lvbkVhc3Rlcm4gRXVyb3BlICAgICAwLjY0NDk5MyAgICBcbnJlZ2lvbk1lbGFuZXNpYSAgICAgICAgICAwLjExMjg3NSAgICBcbnJlZ2lvbk1pY3JvbmVzaWEgICAgICAgICAwLjAyNTM4MiAqICBcbnJlZ2lvbk1pZGRsZSBBZnJpY2EgICAgICA1LjU1ZS0wNSAqKipcbnJlZ2lvbk5vcnRoZXJuIEFmcmljYSAgICAwLjUzODUzOSAgICBcbnJlZ2lvbk5vcnRoZXJuIEFtZXJpY2EgICAwLjMxMzA5MCAgICBcbnJlZ2lvbk5vcnRoZXJuIEV1cm9wZSAgICAwLjU1MDI4NSAgICBcbnJlZ2lvblBvbHluZXNpYSAgICAgICAgICAwLjE3MzAwMSAgICBcbnJlZ2lvblNvdXRoLUVhc3Rlcm4gQXNpYSAwLjQzMTU2OSAgICBcbnJlZ2lvblNvdXRoIEFtZXJpY2EgICAgICAwLjQ3MDEzMCAgICBcbnJlZ2lvblNvdXRoZXJuIEFmcmljYSAgICAwLjAwMDE3OSAqKipcbnJlZ2lvblNvdXRoZXJuIEFzaWEgICAgICAwLjMyMTYzMyAgICBcbnJlZ2lvblNvdXRoZXJuIEV1cm9wZSAgICAwLjM5MDkyOSAgICBcbnJlZ2lvbldlc3Rlcm4gQWZyaWNhICAgICAwLjAwMDEwNiAqKipcbnJlZ2lvbldlc3Rlcm4gQXNpYSAgICAgICAwLjYxMTIxNiAgICBcbnJlZ2lvbldlc3Rlcm4gRXVyb3BlICAgICAwLjM4MjQ4NyAgICBcbi0tLVxuU2lnbmlmLiBjb2RlczogIFxuMCAnKioqJyAwLjAwMSAnKionIDAuMDEgJyonIDAuMDUgJy4nIDAuMSAnICcgMVxuXG5SZXNpZHVhbCBzdGFuZGFyZCBlcnJvcjogMy42NjEgb24gMTcwIGRlZ3JlZXMgb2YgZnJlZWRvbVxuICAoMTQgb2JzZXJ2YXRpb25zIGRlbGV0ZWQgZHVlIHRvIG1pc3NpbmduZXNzKVxuTXVsdGlwbGUgUi1zcXVhcmVkOiAgMC43NzcyLFx0QWRqdXN0ZWQgUi1zcXVhcmVkOiAgMC43NDgzIFxuRi1zdGF0aXN0aWM6IDI2Ljk1IG9uIDIyIGFuZCAxNzAgREYsICBwLXZhbHVlOiA8IDIuMmUtMTZcbiJ9 -->
-<pre><code>
-Call:
-lm(formula = life_exp ~ gdppc_k + region, data = df)
-
-Residuals:
-    Min      1Q  Median      3Q     Max 
--9.0207 -1.8553  0.1469  2.0886 12.8094 
-
-Coefficients:
-                          Estimate Std. Error t value
-(Intercept)               73.37156    2.87451  25.525
-gdppc_k                    0.19155    0.02558   7.489
-regionCaribbean           -1.90199    2.94808  -0.645
-regionCentral America     -1.18825    3.05574  -0.389
-regionCentral Asia        -4.23702    3.26452  -1.298
-regionEastern Africa      -9.24545    2.99152  -3.091
-regionEastern Asia         2.32492    3.25461   0.714
-regionEastern Europe      -1.38450    2.99967  -0.462
-regionMelanesia           -5.38776    3.38080  -1.594
-regionMicronesia          -7.38064    3.27239  -2.255
-regionMiddle Africa      -12.81849    3.09931  -4.136
-regionNorthern Africa     -1.97436    3.20372  -0.616
-regionNorthern America    -3.70439    3.66132  -1.012
-regionNorthern Europe     -1.69813    2.83719  -0.599
-regionPolynesia           -4.83195    3.53117  -1.368
-regionSouth-Eastern Asia  -2.34482    2.97421  -0.788
-regionSouth America       -2.15121    2.97174  -0.724
-regionSouthern Africa    -12.52778    3.27024  -3.831
-regionSouthern Asia       -3.03383    3.05212  -0.994
-regionSouthern Europe      2.51697    2.92626   0.860
-regionWestern Africa     -11.92386    3.00370  -3.970
-regionWestern Asia        -1.44660    2.84048  -0.509
-regionWestern Europe      -2.57625    2.94230  -0.876
-                         Pr(&gt;|t|)    
-(Intercept)               &lt; 2e-16 ***
-gdppc_k                  3.60e-12 ***
-regionCaribbean          0.519692    
-regionCentral America    0.697866    
-regionCentral Asia       0.196080    
-regionEastern Africa     0.002335 ** 
-regionEastern Asia       0.475992    
-regionEastern Europe     0.644993    
-regionMelanesia          0.112875    
-regionMicronesia         0.025382 *  
-regionMiddle Africa      5.55e-05 ***
-regionNorthern Africa    0.538539    
-regionNorthern America   0.313090    
-regionNorthern Europe    0.550285    
-regionPolynesia          0.173001    
-regionSouth-Eastern Asia 0.431569    
-regionSouth America      0.470130    
-regionSouthern Africa    0.000179 ***
-regionSouthern Asia      0.321633    
-regionSouthern Europe    0.390929    
-regionWestern Africa     0.000106 ***
-regionWestern Asia       0.611216    
-regionWestern Europe     0.382487    
----
-Signif. codes:  
-0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-
-Residual standard error: 3.661 on 170 degrees of freedom
-  (14 observations deleted due to missingness)
-Multiple R-squared:  0.7772,    Adjusted R-squared:  0.7483 
-F-statistic: 26.95 on 22 and 170 DF,  p-value: &lt; 2.2e-16</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+</div>
+<div id="tabulate" class="section level3">
+<h3>Tabulate</h3>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubW9kZWwyIDwtIGxtKGxpZmVfZXhwIH4gZ2RwcGNfayArIGhhc19nb2QgKyBoYXNfdW5pdHksIGRhdGEgPSBkZilcbnN1bW1hcnkobW9kZWwyKVxuYGBgIn0= -->
@@ -1877,8 +1831,9 @@ F-statistic: 66.53 on 3 and 189 DF,  p-value: &lt; 2.2e-16</code></pre>
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 </div>
+</div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIjAxIERhdGEgQW5hbHlzaXMiDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KSSBjYW4gd3JpdGUgYW55dGhpbmcgaGVyZQ0KDQoNCiMjIFNldHVwDQoNCkRhdGEgaW1wb3J0ZWQgYW5kIGNsZWFuZWQgd2l0aCBSIHNjcmlwdCBbZGF0YV9pbXBvcnQuUl0oLi9EYXRhL2RhdGFfaW1wb3J0LlIpDQoNCmBgYHtyIHNldHVwfQ0KcGFjbWFuOjpwX2xvYWQoJ3RpZHl2ZXJzZScpDQoNCmRmIDwtIHJlYWRSRFMoIkM6L0dpdGh1Yi9yZXByb2R1Y2libGVfUl9HaXQvRGF0YS9kZi5SRFMiKQ0KYGBgDQoNCiMjIExpbmVhciBSZWdyZXNzaW9uDQoNCmBgYHtyIG9sc30NCm1vZGVsMSA8LSBsbShsaWZlX2V4cCB+IGdkcHBjX2sgKyByZWdpb24sIGRhdGEgPSBkZikNCnN1bW1hcnkobW9kZWwxKQ0KYGBgDQoNCg0KYGBge3Igb2xzMX0NCm1vZGVsMiA8LSBsbShsaWZlX2V4cCB+IGdkcHBjX2sgKyBoYXNfZ29kICsgaGFzX3VuaXR5LCBkYXRhID0gZGYpDQpzdW1tYXJ5KG1vZGVsMikNCmBgYA0KDQo=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIjAxIERhdGEgQW5hbHlzaXMiDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpUaGUgZm9sbG93aW5nIGV4ZXJjaXNlcyBhcmUgcGFydCBvZiBhIGNvdXJzZS93b3Jrc2hvcCB0byBsZWFybiBiYXNpYyBSIHdpdGggUiBTdHVkaW8gYW5kIEdpdCAoW1N5bGxhYnVzXShodHRwczovL2RvY3MuZ29vZ2xlLmNvbS9kb2N1bWVudC9kLzFPX3YtVlRSSENoZWRvRHZWdHpuOHhORzBqQnFKeE1XMFE3LTBiSjkwUTQ4L2VkaXQpKQ0KDQoNCiMjIFNldHVwDQoNCkRhdGEgaW1wb3J0ZWQgYW5kIGNsZWFuZWQgd2l0aCBSIHNjcmlwdCBbZGF0YV9pbXBvcnQuUl0oLi9EYXRhL2RhdGFfaW1wb3J0LlIpDQoNCmBgYHtyIHNldHVwfQ0KDQojIGJ5IG1ha2luZyBhbiBvYmplY3Qgd2l0aCBhIGxpc3Qgb2YgcGFja2FnZXMsIHdlIGNhbiBsYXRlciBjYWxsIHRoZSBjaXRhdGlvbnMgb2YgdGhlc2UgcGFja2FnZXMgKHNlZSBzZWN0aW9uICdSZWZlcmVuY2VzJyBiZWxvdykNCg0KcGFja2FnZXMgPC0gYygndGlkeXZlcnNlJywgDQogICAgICAgICAgICAgICdwYWNtYW4nKQ0KDQoNCiMgaGVyZSB3ZSBjYW4gbG9hZCB0aGUgcGFja2FnZXMuIHBfbG9hZCBmcm9tIHRoZSBwYWNrYWdlIHBhY21hbiBjaGVja3MgaWYgdGhlIHBhY2thZ2UgaXMgYWxyZWFkeSBkb3dubG9hZGVkIGFuZCBpZiBzbyBsb2FkcyBpdCwgaWYgbm90IGRvd25sb2Fkcw0KDQpwYWNtYW46OnBfbG9hZChwYWNrYWdlcywgY2hhcmFjdGVyLm9ubHkgPSBUKQ0KDQoNCiMgaGVyZSB3ZSBsb2FkIHRoZSBkYXRhDQoNCmRmIDwtIHJlYWRSRFMoIkM6L0dpdGh1Yi9yZXByb2R1Y2libGVfUl9HaXQvRGF0YS9kZi5SRFMiKQ0KYGBgDQoNCiMjIExpbmVhciBSZWdyZXNzaW9ucw0KDQojIyMgU3RvcmUgbW9kZWxzDQoNCldlIHJ1biByZWdyZXNzaW9ucyBvZiBsaWZlIGV4cGVjdGFuY3kgb24gR0RQLCByZWdpb24gYW5kIHZhcmlhYmxlcyB0aGF0IGNhdGVnb3JpemUgdGhlIG1vdHRvcyBvZiBkaWZmZXJlbnQgY291bnRyaWVzLiBXZSBzdG9yZSB0aGVzZSByZWdyZXNzaW9ucyBpbiBvYmplY3RzIG5hbWVkIG1vZGVsMSwgbW9kZWwyLCBldGMuDQoNCmBgYHtyIG9sc30NCm1vZGVsMSA8LSBsbShsaWZlX2V4cCB+IGdkcHBjX2sgKyByZWdpb24sIGRhdGEgPSBkZikNCm1vZGVsMiA8LSBsbShsaWZlX2V4cCB+IGdkcHBjX2sgKyBoYXNfZ29kICsgaGFzX3VuaXR5LCBkYXRhID0gZGYpDQpgYGANCg0KIyMjIFRhYnVsYXRlDQoNCmBgYHtyIG9sczF9DQoNCnN1bW1hcnkobW9kZWwyKQ0KYGBgDQoNCg==</div>
 
 
 
