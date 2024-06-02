@@ -1,6 +1,8 @@
 ---
 title: "01 Data Analysis"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
 The following exercises are part of a course/workshop to learn basic R with R Studio and Git ([Syllabus](https://docs.google.com/document/d/1O_v-VTRHChedoDvVtzn8xNG0jBqJxMW0Q7-0bJ90Q48/edit))
@@ -35,14 +37,79 @@ df <- readRDS("C:/Github/reproducible_R_Git/Data/df.RDS")
 We run regressions of life expectancy on GDP, region and variables that categorize the mottos of different countries. We store these regressions in objects named model1, model2, etc.
 
 ```{r ols}
+
+# metric (original measures)
+
 model1 <- lm(life_exp ~ gdppc_k + region, data = df)
 model2 <- lm(life_exp ~ gdppc_k + has_god + has_unity, data = df)
+
+
+# XY-standardized
+## For dichotomous variables, it is not necessary to standardize X (depends on what interpretation you are looking for)
+
+## standardized
+
+df$std_life_exp <- as.numeric(scale(df$life_exp, center = TRUE, scale = TRUE))
+df$std_gdppc <- as.numeric(scale(df$gdppc_k, center = TRUE, scale = TRUE))
+
+## standardized models
+model1B <- lm(std_life_exp ~ std_gdppc + region, data = df)
+model2B <- lm(std_life_exp ~ std_gdppc + has_god + has_unity, data = df)
 ```
 
 ### Tabulate
 
-```{r ols1}
+#### Create
 
-summary(model2)
+Create a table of results using base R
+
+```{r ols1}
+sum_tab <- list(summary(model1)$coefficients,
+                summary(model1B)$coefficients,
+                summary(model2)$coefficients,
+                summary(model2B)$coefficients)
+
+# name the items in the list
+names(sum_tab) <- c("model1", "model1B", "model2", "model2B")
+
+# calculate p-values
+## create tables first as dataframes
+tbl1 <- as.data.frame(sum_tab$model1)
+tbl2 <- as.data.frame(sum_tab$model1B)
+tbl3 <- as.data.frame(sum_tab$model2)
+tbl4 <- as.data.frame(sum_tab$model2B)
+
+## remove SE and t-values, and make one table
+
+tbl_all <- as.data.frame(matrix(nrow = 25, ncol = 9))
+
+colnames(tbl_all) <- c("Variable", "m1_b", "m1_p", "m1B_b", "m1B_p", "m2_b", "m2_p", "m2B_b", "m2B_p")
+
+tbl_all$Variable[1:23] <- rownames(tbl1)
+tbl_all$Variable[24:25] <- c("Motto God", "Motto Unity")
+tbl_all$m1_b[1:23] <- round(tbl1$Estimate,2)
+tbl_all$m1B_b[1:23] <- round(tbl2$Estimate,2)
+tbl_all$m2_b[c(1,2,24,25)] <- round(tbl3$Estimate,2)
+tbl_all$m2B_b[c(1,2,24,25)] <- round(tbl4$Estimate,2)
+
+tbl_all$m1_p[1:23] <- round(tbl1$`Pr(>|t|)`,2)
+tbl_all$m1B_p[1:23] <- round(tbl2$`Pr(>|t|)`,2)
+tbl_all$m2_p[c(1,2,24,25)] <- round(tbl3$`Pr(>|t|)`,2)
+tbl_all$m2B_p[c(1,2,24,25)] <- round(tbl4$`Pr(>|t|)`,2)
+
+tbl_all[is.na(tbl_all)] <- ""
+
+# remove the word "region" from all labels
+tbl_all <- data.frame(lapply(tbl_all, function(x) {
+  gsub("region","",x)
+}))
+```
+
+#### Print
+
+```{r printdf}
+
+print.data.frame(tbl_all, row.names = F)
+
 ```
 
