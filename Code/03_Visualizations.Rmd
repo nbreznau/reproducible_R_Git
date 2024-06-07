@@ -1,0 +1,119 @@
+---
+title: "03 Visualizations"
+output: html_notebook
+---
+
+The following exercises are part of a course/workshop to learn basic R with R Studio and Git ([Syllabus](https://docs.google.com/document/d/1O_v-VTRHChedoDvVtzn8xNG0jBqJxMW0Q7-0bJ90Q48/edit))
+
+## Setup
+
+```{r setup}
+
+packages <- c('tidyverse', 
+              'pacman',
+              'ggplot2',
+              'rnaturalearth', # package to get earth map
+              'ggmap', # mapping for ggplot
+              'sf', 
+              'jtools', # for plotting coefficients
+              'ragg') # for saving high quality graphics
+
+pacman::p_load(packages, character.only = T)
+
+```
+
+## Data and Model
+
+This is model 3 from the previous notebook
+
+```{r 02lin}
+df <- readRDS("C:/Github/reproducible_R_Git/Data/df.RDS")
+
+df$gdppc_10k <- df$gdppc_k/10 #put in 10k $US for comprability
+
+model3 <- lm(life_exp ~ gdppc_10k + region + has_god + has_unity, data = df)
+```
+
+## Coeff Plots
+
+```{r coeff}
+plot_coefs(model3,
+           coefs = c("GDPpc in 10k" = "gdppc_10k","\'God\' in Motto" = "has_god", "\'Unity\' in Motto" = "has_unity"),
+           colors = c("#287D8EFF")) +
+  ggtitle("Life Expectancy at Birth by GDP and National Motto") +
+  theme(plot.title = element_text(hjust = 1, color = "black"),
+        axis.text = element_text(color = "black"))
+  
+```
+
+## Map
+
+### Setup Map
+
+```{r setupmap}
+
+wi_map <- ne_countries(returnclass = "sf") %>% # calls a worldmap
+  st_transform("+proj=eqearth") %>% # calls an equal earth geometric map
+  mutate(iso3c = iso_a3) %>% # sets the country name variable to be equal to our df
+  mutate(iso3c = ifelse(!is.na(iso3c), iso_a3_eh, iso3c)) %>% # two countries are missing, this is an error in the rnaturalearth package
+  select(iso3c, geometry) %>% # select only those variables that are needed for plotting map
+  left_join(df, by = "iso3c") %>% # combine the dataframes
+  subset(!is.na(country)) %>% # remove missing countries
+  mutate(motto_cat = case_when(has_unity == 1  ~ "unity",
+                               has_one == 1 & has_unity !=1 & has_god !=1 ~ "one",
+                               has_god == 1 & has_unity != 1 ~ "god",
+                               has_justice == 1 & has_unity != 1 & has_god != 1 & has_one !=1 ~ "justice",
+                               has_none == 1 ~ "none",
+                               .default = "other"))
+```
+
+### Plot Map Mottos
+
+```{r map}
+map1 <- wi_map %>%
+  ggplot(aes(fill = motto_cat)) +
+  geom_sf(size = 0.15, colour = "black") +
+  scale_fill_manual(values = c("unity" = "#482677FF", "god" = "#39568CFF","one" = "#1F968BFF","justice" = "#73D055FF", "other" = "#DCE319FF", "none" = "grey"),
+                    na.value = "white") +
+  lims(x = c(-10100000,14000000)) +
+  coord_sf(label_axes = "----") +
+  labs(fill = "Motto Contains",
+       title = "Country Mottos Around The World") +
+  theme_classic() +
+  theme(legend.position = "bottom",
+        legend.direction = "horizontal")
+
+agg_png(here::here("Results", "map_mottos.png"), res = 288, height = 1000, width = 1500) # turn on file saving
+
+map1
+
+dev.off() # turn off and save file
+
+# add file to the knitted notebook
+knitr::include_graphics(here::here("Results", "map_mottos.png"))
+```
+
+### Plot Map Life-Exp
+
+```{r mapex}
+map2 <- wi_map %>%
+  ggplot(aes(fill = as.numeric(life_exp))) +
+  geom_sf(size = 0.15, colour = "black") +
+  scale_fill_viridis_c(na.value = "white") +
+  lims(x = c(-10100000,14000000)) +
+  coord_sf(label_axes = "----") +
+  labs(fill = "Life Expectancy\n(at Birth in Years)",
+       title = "Life Expectancy Around The World") +
+  theme_classic() +
+  theme(legend.position = "bottom",
+        legend.direction = "horizontal")
+
+agg_png(here::here("Results", "map_lifeex.png"), res = 288, height = 1000, width = 1500) # turn on file saving
+
+map2
+
+dev.off() # turn off and save file
+
+# add file to the knitted notebook
+knitr::include_graphics(here::here("Results", "map_lifeex.png"))
+```

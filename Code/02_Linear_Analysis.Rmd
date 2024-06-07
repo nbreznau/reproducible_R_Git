@@ -42,7 +42,7 @@ We run regressions of life expectancy on GDP, region and variables that categori
 
 model1 <- lm(life_exp ~ gdppc_k + region, data = df)
 model2 <- lm(life_exp ~ gdppc_k + has_god + has_unity, data = df)
-
+model3 <- lm(life_exp ~ gdppc_k + region + has_god + has_unity, data = df)
 
 # XY-standardized
 ## For dichotomous variables, it is not necessary to standardize X (depends on what interpretation you are looking for)
@@ -55,6 +55,7 @@ df$std_gdppc <- as.numeric(scale(df$gdppc_k, center = TRUE, scale = TRUE))
 ## standardized models
 model1B <- lm(std_life_exp ~ std_gdppc + region, data = df)
 model2B <- lm(std_life_exp ~ std_gdppc + has_god + has_unity, data = df)
+model3B <- lm(std_life_exp ~ std_gdppc + region + has_god + has_unity, data = df)
 ```
 
 ### Tabulate
@@ -67,10 +68,12 @@ Create a table of results using base R
 sum_tab <- list(summary(model1)$coefficients,
                 summary(model1B)$coefficients,
                 summary(model2)$coefficients,
-                summary(model2B)$coefficients)
+                summary(model2B)$coefficients,
+                summary(model3)$coefficients,
+                summary(model3B)$coefficients)
 
 # name the items in the list
-names(sum_tab) <- c("model1", "model1B", "model2", "model2B")
+names(sum_tab) <- c("model1", "model1B", "model2", "model2B", "model3", "model3B")
 
 # calculate p-values
 ## create tables first as dataframes
@@ -78,24 +81,26 @@ tbl1 <- as.data.frame(sum_tab$model1)
 tbl2 <- as.data.frame(sum_tab$model1B)
 tbl3 <- as.data.frame(sum_tab$model2)
 tbl4 <- as.data.frame(sum_tab$model2B)
+tbl5 <- as.data.frame(sum_tab$model3)
+tbl6 <- as.data.frame(sum_tab$model3B)
 
 ## remove SE and t-values, and make one table
 
-tbl_all <- as.data.frame(matrix(nrow = 25, ncol = 9))
+tbl_all <- as.data.frame(matrix(nrow = 25, ncol = 10))
 
-colnames(tbl_all) <- c("Variable", "m1_b", "m1_p", "m1B_b", "m1B_p", "m2_b", "m2_p", "m2B_b", "m2B_p")
+colnames(tbl_all) <- c("Variable", "m1_b", "m1_p", "m1_B", "m2_b", "m2_p", "m2_B", "m3_b", "m3_p", "m3_B")
 
-tbl_all$Variable[1:23] <- rownames(tbl1)
-tbl_all$Variable[24:25] <- c("Motto God", "Motto Unity")
+tbl_all$Variable[1:25] <- rownames(tbl5)
 tbl_all$m1_b[1:23] <- round(tbl1$Estimate,2)
-tbl_all$m1B_b[1:23] <- round(tbl2$Estimate,2)
+tbl_all$m1_B[1:23] <- round(tbl2$Estimate,2)
 tbl_all$m2_b[c(1,2,24,25)] <- round(tbl3$Estimate,2)
-tbl_all$m2B_b[c(1,2,24,25)] <- round(tbl4$Estimate,2)
+tbl_all$m2_B[c(1,2,24,25)] <- round(tbl4$Estimate,2)
+tbl_all$m3_b <- round(tbl5$Estimate,2)
+tbl_all$m3_B <- round(tbl6$Estimate,2)
 
 tbl_all$m1_p[1:23] <- round(tbl1$`Pr(>|t|)`,2)
-tbl_all$m1B_p[1:23] <- round(tbl2$`Pr(>|t|)`,2)
 tbl_all$m2_p[c(1,2,24,25)] <- round(tbl3$`Pr(>|t|)`,2)
-tbl_all$m2B_p[c(1,2,24,25)] <- round(tbl4$`Pr(>|t|)`,2)
+tbl_all$m3_p[] <- round(tbl5$`Pr(>|t|)`,2)
 
 tbl_all[is.na(tbl_all)] <- ""
 
