@@ -1,6 +1,8 @@
 ---
 title: "03 Visualizations"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
 The following exercises are part of a course/workshop to learn basic R with R Studio and Git ([Syllabus](https://docs.google.com/document/d/1O_v-VTRHChedoDvVtzn8xNG0jBqJxMW0Q7-0bJ90Q48/edit))
@@ -46,7 +48,7 @@ plot_coefs(model3,
   
 ```
 
-## Map
+## Map Plots
 
 ### Setup Map
 
@@ -117,3 +119,53 @@ dev.off() # turn off and save file
 # add file to the knitted notebook
 knitr::include_graphics(here::here("Results", "map_lifeex.png"))
 ```
+
+## Balloon Plots
+
+The `rnaturalearth::ne_countries` map contains a host of data. For example population. We can use these data for plotting.
+
+### Setup DF
+
+```{r ballo1}
+# get population data from the rnaturalearth package
+df_pop <- ne_countries(returnclass = "sf") %>% 
+  st_transform("+proj=eqearth") %>%
+  mutate(iso3c = iso_a3) %>%
+  mutate(iso3c = ifelse(!is.na(iso3c), iso_a3_eh, iso3c)) %>%
+  as.data.frame() %>% # convert to dataframe, otherwise cannot remove geometry
+  select(iso3c, pop_est)
+
+# add to primary dataframe 
+df <- left_join(df, df_pop, by = "iso3c")
+
+# add motto_cat to df
+df <- df %>%
+  mutate(motto_cat = case_when(has_unity == 1  ~ "unity",
+                               has_god == 1 & has_unity != 1 ~ "god",
+                               has_none == 1 ~ "none",
+                               .default = "other"))
+```
+
+### Balloon Plot
+
+Plot GDP by life expectancy, with size for population and coloring for motto
+
+```{r ballo2}
+df %>% 
+  mutate(gdppc_10k_cut = ifelse(gdppc_10k > 8, 8, gdppc_10k)) %>% 
+  ggplot(aes(log(gdppc_10k_cut), life_exp)) +
+  scale_fill_viridis_d(breaks = c("god", "unity", "other", "none")) +
+  geom_point(aes(fill=motto_cat, size=pop_est), shape=21) +
+  labs(x = "Log GDP Per Capita",
+       y = "Life Expectancy at Birth",
+       title = "Life Expectancy and National Mottos",
+       caption = " \nSize of bubbles = population") +
+  theme_classic() +
+  guides(
+    size = "none",
+    fill = guide_legend(title = "Motto\nContains", override.aes = list(size = 4))
+  )
+
+```
+
+
