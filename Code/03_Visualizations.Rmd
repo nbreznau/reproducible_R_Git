@@ -168,4 +168,12 @@ df %>%
 
 ```
 
+## Citations
+
+```{r cite}
+packages %>%
+  map(citation) %>%
+  print(style = "text")
+```
+
 

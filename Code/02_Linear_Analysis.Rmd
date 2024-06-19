@@ -118,3 +118,10 @@ print.data.frame(tbl_all, row.names = F)
 
 ```
 
+## Citations
+
+```{r cite}
+packages %>%
+  map(citation) %>%
+  print(style = "text")
+```

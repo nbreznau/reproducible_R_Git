@@ -1,0 +1,202 @@
+---
+title: "04_Survey_Data"
+output: html_notebook
+---
+
+This workflow covers some basics of working with survey data.
+
+It uses a sample of a real data project by Melamine Timité at the University of Zurich.
+
+## Setup
+
+```{r setup}
+packages <- c('tidyverse',
+              'ggplot2') 
+
+pacman::p_load(packages, character.only = T)
+```
+
+
+## Data
+
+See folder "Data" for subroutine to extract a 100 case sample of the original 204 cases. Sharing all of it would be unfair to Melamine's project at this point. 
+
+Note that the original data can be saved on my computer but then a line in the gitignore file excludes it from being synced. 
+
+```{r data}
+
+df_melamine <- read.csv(here::here("Data", "df_melamine.csv"))
+```
+
+## Sample analysis
+
+
+### Demographics
+
+4. What is the percentage of older and younger people in the database?
+5. What is the percentage of females and males?
+
+#### Recode
+
+To do this we need to convert the string data in the variable "Alter" into ordered categories, and check with the `summary` command that it worked
+
+```{r mf}
+df_melamine$Alter_Cat <- factor(df_melamine$Alter)
+
+summary(df_melamine$Alter_Cat)
+```
+#### Generate Data
+
+```{r sums_age_sex}
+df_melamine %>%
+  group_by(Geschlecht, Alter) %>%
+  summarise(count = n())
+```
+#### EXERCISES: Create plots
+
+1. Plot a bar chart with the percentage of male, female and other for the variable sex (tip: use ggplot2 and geom_bar)
+2. Plot a bar chart with the number of people in each age category (tip: use ggplot2 and geom_bar)
+3. Make a professional looking table of the data (tip: use kable and possibly kableExtra)
+
+```{r exercises}
+
+```
+
+### Animals and Plants
+
+1. Which proverbs and proverbial sayings with animal and/or plant names occur most frequently?
+2. Which proverbs and proverbial sayings with animal and plant lexemes are more familiar to older people and which are more familiar to young people?
+
+
+#### Word lists & Age
+
+We need a way to identify all animals and plants in German. Given how the German language works, this is not so easy. Here I got a list from ChatGPT. I put the list in a different file "plant_animal_lists.R" to save space. I call on this file here.
+
+Also here I create a variable that allows us to more easily analyze age differences.
+
+```{r animal_plant_lists}
+
+#load animal and plant lists
+source(here::here("Data", "plant_animal_lists.R"))
+
+# recode age
+df_melamine <- df_melamine %>%
+  mutate(Young_35 = ifelse(as.numeric(Alter_Cat) < 3, 1, 0),
+         Young_35_Mid_55 = case_when(
+           as.numeric(Alter_Cat) < 3 ~ 0,
+           as.numeric(Alter_Cat) == 3 ~ 1,
+           as.numeric(Alter_Cat) == 4 ~ 1,
+           as.numeric(Alter_Cat) > 4 ~ 2,
+           .default = NA
+         ))
+
+```
+
+#### Rate of proverb knowledge
+
+Here we want to find out the rate of "sehr gut bekannt" und "gut bekannt" for proverbs. First we want to find which are the most well known. These questions on whether a respondent knows it are at the beginning, in rows 7-17. Here I create a new variable with the proverb and the number of times is was "gut bekannt"
+
+```{r prov_rates}
+
+sum_proverb_bekannt <- as.data.frame(matrix(nrow = 11, ncol = 8))
+colnames(sum_proverb_bekannt) <- c("Number", "Proverb", "Known_Rate", "Males", "Females", "Non_Binary", "Younger", "Older")
+
+for(num in 7:17){
+  #summarise overall
+  sum_proverb_bekannt$Number[num-6] <- num - 6
+  sum_proverb_bekannt$Proverb[num-6] <- gsub("\\.", " ", colnames(df_melamine[num]))
+  sum_proverb_bekannt$Known_Rate[num-6] <- sum(str_count(df_melamine[,num], pattern = "gut bekannt"), na.rm = T)/length(df_melamine[,num])
+  
+  #by sex
+  sum_proverb_bekannt$Males[num-6] <- round(sum(str_count(subset(df_melamine, Geschlecht == "männlich")[,num], pattern = "gut bekannt"), na.rm = T)/length(subset(df_melamine, Geschlecht == "männlich")[,num]),2)
+  sum_proverb_bekannt$Females[num-6] <- round(sum(str_count(subset(df_melamine, Geschlecht == "weiblich")[,num], pattern = "gut bekannt"), na.rm = T)/length(subset(df_melamine, Geschlecht == "weiblich")[,num]),2)
+  sum_proverb_bekannt$Non_Binary[num-6] <- round(sum(str_count(subset(df_melamine, Geschlecht == "anderes")[,num], pattern = "gut bekannt"), na.rm = T)/length(subset(df_melamine, Geschlecht == "anderes")[,num]),2)
+  
+  #by age (35 and under = younger, over 35 = older)
+  sum_proverb_bekannt$Younger[num-6] <- round(sum(str_count(subset(df_melamine, Young_35 == 1)[,num], pattern = "gut bekannt"), na.rm = T)/length(subset(df_melamine, Young_35 == 1)[,num]),2)
+  sum_proverb_bekannt$Older[num-6] <- round(sum(str_count(subset(df_melamine, Young_35 == 0)[,num], pattern = "gut bekannt"), na.rm = T)/length(subset(df_melamine, Young_35 == 0)[,num]),2)
+}
+
+
+```
+
+
+#### Plot
+
+```{r plot_rates}
+sum_proverb_bekannt %>%
+  ggplot(aes(x = reorder(Proverb, Known_Rate), y = Known_Rate)) +
+  geom_bar(stat = "identity", width = 0.8) +
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 27)) +
+  labs(y = "Rate of people who know the proverb", x = "") +
+  coord_flip() +
+  theme_classic() +
+  theme(
+    axis.text.y = element_text(size = 7, hjust = 0, color = "black"),
+    axis.title.x = element_text(size = 8)
+  )
+```
+
+
+#### Counting
+
+3. Which proverbs and proverbial sayings are given by the females and which by the males?
+6. Which proverbs and proverbial sayings are known and given by young females and which by young males?
+7. Which proverbs and proverbial sayings are known and given by old females and which by old males?
+8. Is there a correlation between age and gender in the knowledge of proverbs and proverbial sayings?
+9. Do age and gender have an impact on knowledge of proverbs and proverbial expressions?
+10. How many proverbs and proverbial sayings does the data set have? 
+11. Give a list of animal and plant names that occur in the data set. List the names of the animals and plants in the database. And order them on the basis of their frequency in proverbs and proverbial expressions (in the data set).
+
+There are some questions that list proverbs and others where the participants list proverbs. We need a way to count both.
+
+
+##### Variables listing proverbs
+
+Here I write code to check if a variable name has a plant or animal name, and then whether the respondent knows this proverb (indicated by a response that includes "gut bekannt")
+
+```{r animal_vars}
+# create new variables for counting, set them to zero for now
+df_melamine$animal_count <- 0
+df_melamine$plant_count <- 0
+
+# loop thru each row in the df
+for(r in 1:nrow(df_melamine)){
+  animals <- 0
+  plants <- 0
+    # check each column
+    for(c in 1:ncol(df_melamine)){
+      response <- paste(df_melamine[r, c], gsub("\\.", " ", colnames(df_melamine[c])), sep = ",")
+      
+      # check for animal names and "gut bekannt"
+      if(any(grepl(paste(animal_words, collapse = "|"), response, ignore.case = TRUE)) && grepl("gut bekannt", response, ignore.case = TRUE)) {
+        # add 1 each time both conditions are met
+        animals <- animals + 1
+      }
+      
+      # check for plant names and "gut bekannt"
+      if(any(grepl(paste(plant_words, collapse = "|"), response, ignore.case = TRUE)) && grepl("gut bekannt", response, ignore.case = TRUE)) {
+        plants <- plants + 1
+      }
+    }
+  df_melamine$plant_count[r] <- plants
+  df_melamine$animal_count[r] <- animals
+}
+```
+
+
+
+## Colophon
+
+```{r colophon}
+
+sessionInfo()
+```
+
+## Citations
+
+```{r cite}
+packages %>%
+  map(citation) %>%
+  print(style = "text")
+```
