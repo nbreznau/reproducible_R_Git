@@ -30,6 +30,57 @@ pacman::p_load(packages, character.only = T)
 df <- readRDS("C:/Github/reproducible_R_Git/Data/df.RDS")
 ```
 
+## Recoding
+
+As an exercise, lets learn to do some recoding.
+
+For starters, recode life expectancy into ordinal categories. We can do this as numbers or as strings (characters) using `mutate` and `case_when`.
+
+### Ordered Categories
+
+```{r recodes}
+
+df <- df %>%
+  mutate(
+    life_exp_cat = case_when( # first macke numerical recodes
+      life_exp <= 60 ~ 1,
+      life_exp > 60 & life_exp <= 70 ~ 2,
+      life_exp > 70 & life_exp <= 80 ~ 3,
+      life_exp > 80 ~ 4,
+      .default = NA
+      ),
+    life_exp_cat_chr = case_when( # now make character recodes
+      life_exp <= 60 ~ "60 or less",
+      life_exp > 60 & life_exp <= 70 ~ "60 to 70",
+      life_exp > 70 & life_exp <= 80 ~ "70 to 80",
+      life_exp > 80 ~ "80 or more",
+      .default = NA)
+    )
+```
+
+### String to numeric
+
+Use `case_match` to divide the character based variable back into a numeric variable. 
+
+```{r case_match}
+
+df <- df %>%
+  mutate(
+    life_exp_cat_num = case_match(
+      life_exp_cat_chr,
+      "60 or less" ~ 1,
+      "60 to 70" ~ 2,
+      "70 to 80" ~ 3,
+      "80 or more" ~ 4,
+      .default = NA
+    )
+  )
+
+# test that life_exp_cat_num and life_exp_cat are idenitcal
+cor(df$life_exp_cat, df$life_exp_cat_num, use = "pairwise.complete.obs")
+
+```
+
 ## Linear Regressions
 
 ### Store models
